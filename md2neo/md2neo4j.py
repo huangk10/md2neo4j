@@ -28,19 +28,19 @@ class Md2Neo4j:
         for i in range(1, len(line_str)):
             title = len(re.match(r'^[#]+', line_str[i])[0])
             if title > m:
-                node_a, _ = self.str2node(line_str[i-1], pjt_id)
-                node_b, relation = self.str2node(line_str[i], pjt_id)
+                node_a, _ = self.str2node(line_str[i-1])
+                node_b, relation = self.str2node(line_str[i])
                 self.graph.run("merge (a%s) merge (b%s) merge (a)-[:%s]->(b)" % (node_a, node_b, relation))
                 m = title
             else:
                 j = 0
                 while len(re.match(r'^[#]+', line_str[i-j])[0]) >= title:
                     j += 1
-                node_a, _ = self.str2node(line_str[i - j], pjt_id)
-                node_b, relation = self.str2node(line_str[i], pjt_id)
+                node_a, _ = self.str2node(line_str[i - j])
+                node_b, relation = self.str2node(line_str[i])
                 self.graph.run("merge (a%s) merge (b%s) merge (a)-[:%s]->(b)" % (node_a, node_b, relation))
 
-    def str2node(self, node_info, pjt_id):
+    def str2node(self, node_info):
         line = re.match(r'#* (.*)', node_info)[1]
         lines = line.split('/')
         for i in range(len(lines)):
@@ -54,7 +54,7 @@ class Md2Neo4j:
                 relation = re.match(r'\{(.*)\}', lines[i])[1]
             else:
                 relation = 'TRANSFER'
-        str_re += "PROJECT_ID: '%s'" % (pjt_id)
+        str_re += "}"
         return str_re, relation
 
 
